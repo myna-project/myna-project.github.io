@@ -12,6 +12,7 @@ t:
   ita:
     home:  "Home"
     about: "About"
+    developer : "Sviluppatori"
     demo : "Demo online"
     use : "Usa online"
     contact : "Contatti"
@@ -20,6 +21,7 @@ t:
   eng:
     home:  "Home"
     about: "About"
+    developer : "Developer"
     demo : "Online demo"
     use : "Online use"
     contact : "Contact"
