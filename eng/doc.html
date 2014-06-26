@@ -1,0 +1,241 @@
+---
+title: Documentation
+layout: default
+lang: eng
+active: documentation
+---
+<div class="row"> 
+    <div class="col-lg-3 col-md-3">
+        {% include documentation-side-navbar.html %}
+    </div>
+    <div class="col-lg-9 col-md-3">
+        <section id="registry-configuration">
+            <div class="page-header">
+                <h2>Registry/Configuration </h2>
+            </div>
+            
+            <h4><b>/maps </b></h4>
+            <p>Allows to obtain the list of the rooms in a flat and to configure them based on the match of devices. Support for GET and POST.</p>
+            
+            <p><b>GET</b></p>
+            <p>Allow to get the list of the rooms defined in the system. </p>
+            
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-get-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-get"></div>
+            
+            
+            <p><b>POST</b></p>
+            <p>Allows the creation of a new room in the system</p>
+            
+            <p><b>Request</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-post-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-post-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-post"></div>
+            
+            <p>In case of an already existing room, the system overwrite the old room. Attention, devices must be defined in the system.</p>
+            
+            
+            <h4><b>/maps/{id} </b></h4>
+            <p>Allows to work on a room details.</p>
+            
+            <p><b>GET</b></p>
+            <p>The call allows to get all of details of a room.</p>
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-id-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-id-get-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-id-get"></div>
+            
+            <p><b>PUT</b></p>
+            <p>Allows to modify a room in the system. </p>
+            <p><b>Request</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-id-put-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-id-put-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-id-put"></div>
+            <p>Attention, devices must be defined in the system.</p>
+            
+            <p><b>DELETE</b></p>
+            <p>Allows to delete a room</p>
+
+            <h4><b>/maps/{id}/commands/warmup</b> (POST e PUT)</h4>
+            <h4><b>/maps/{id}/commands/off</b> (POST e PUT)</h4>
+            <p>Allows to send a command to the room. Now warmup and off are supported. All the logics in a room are diasbled following the warmup command.</p>
+        
+         </section>
+        
+        <section id="status">
+            <div class="page-header">
+                <h2>Status </h2>
+            </div>
+            
+            <h4><b>/status </b></h4>
+            <p>Get the status of all devices in the system.</p>
+            <p><b>GET</b></p>
+            <p>Return the list of the status of all devices </p>
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="status-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="status-get-expand-btn">Expand</button>
+            
+            <div class="code" id="status-get"></div>
+            
+            
+            <h4><b>/status/{id} </b></h4>
+            <p> Allows to get the detail of a device </p>
+            <p><b>GET</b></p>
+            <p>Returns the value of the variable name.</p>
+            <p><b>Result</b></p>
+            <div class="code" id="status-id-get"></div>
+           
+        </section>
+        
+        <section id="devices">
+            <div class="page-header">
+                <h2>Devices </h2>
+            </div>
+            
+            <h4><b>/devices </b></h4>
+            <p>Allows the devices management.</p>
+            <p><b>GET</b></p>
+            <p>Returns the list of all devices in the system</p>
+            <button class="btn btn-default json-collapse" id="devices-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="devices-get-expand-btn">Expand</button>
+            
+            <div class="code" id="devices-get"></div>
+            
+            <p><b>POST</b></p>
+            <p>Allows the creation of a new device </p>
+            <div class="code" id="devices-post"></div>
+            <p>Allows the creation of a new device. Now two types of device ar supported. In case of an already existing device, the system will overwrite it </p>
+            <p><b>Temperature</b></p>
+            <p>Temperature device with following parameters:</p>
+            <ul>
+                <li><b>id</b>, device's id</li>
+                <li><b>type</b>, Temperature </li>
+                <li><b>bus</b>, bus type: onewire, enocean e piface </li>
+                <li><b>address</b>, device's address (valid for enocoean/onewire)</li>
+                <li><b>register</b>, associated modbus register</li>
+                <li><b>eep</b>, supported enocean profile</li>
+                <li><b>external</b>, to indicate a devices outside the home</li>
+                <li><b>id</b>, name </li>
+            </ul>
+            <p><b>OnOff</b></p>
+            <p>Device that allow to do execute commands in the home </p>
+            <ul>
+                <li><b>id</b>, device's id </li>
+                <li><b>type</b>, OnOff </li>
+                <li><b>coil</b>, piface's address </li>
+                <li><b>name</b>, device's name</li>
+            </ul>
+            
+            
+             <h4><b>/devices/{id} </b></h4>
+             <p>Allows to see the details of a device.</p>
+             <p><b>GET</b></p>
+             <p>Allows to get the details of a device </p>
+             <div class="code" id="devices-id-get"></div>
+             
+             <p><b>PUT</b></p>
+             <p>Same format as POST /device</p>
+             
+             <p><b>DELETE</b></p>
+             <p>Allows to delet a device only if it is not associated to a room</p>
+             
+             <h4><b>/devices/{id}/commands/on </b>(POST e PUT)</h4>
+             <h4><b>/devices/{id}/commands/off</b>(POST e PUT)</h4>
+        </section>
+        <section id="logics">
+            <div class="page-header">
+                <h2>Logics</h2>
+            </div>
+            
+            <h4><b>/logics </b></h4>
+            <p>This api allows to manage logics related to myna. Now two type of logics are supported: threshold and time programming. </p>
+        
+            <p><b>GET</b></p>
+            <p>Returns the list of system logics</p>
+            <button class="btn btn-default json-collapse" id="logics-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="logics-get-expand-btn">Expand</button>
+            
+            <div class="code" id="logics-get"></div>
+            
+            <p><b>POST</b></p>
+            <p>Allows the creation of logics to control the system. In case a logic is already present, the system will overwrite the logic. Supported type are: </p>
+            <p><b>ThresholdTemperature</b></p>
+            <ul>
+                <li><b>id</b>, logic's id (if absent, a random id will be provided) </li>
+                <li><b>room</b>, room associated to the logic</li>
+                <li><b>temp</b>, threshold of temperature (note: unit is a system field) </li>
+                <li><b>enable</b>, indicates if a logic is active or not </li>
+            </ul>
+            
+            <p><b>TimeProgramming</b></p>
+            <p>Extends the type ThresholdTemperature adding the fild time that indicates start time and and time of scheduling. For each scheduling it is possible to define a different temperature</p>
+            
+            <p><b>Notes</b></p>
+            <ul>
+                <li>Only one logic can be active for each room</li>
+                <li>Each room can have only one logic per type</li>
+                <li>In time scheduling, it is not possible to create overlapping logics </li>
+            </ul>
+            
+             <h4><b>/logics/{id} </b></h4>
+             <p>The api allows to manage one logice per time </p>
+             <p><b>GET</b></p>
+             <p>Returns the details of a logic </p>
+             
+             <button class="btn btn-default json-collapse" id="logics-id-get-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="logics-id-get-expand-btn">Expand</button>
+            
+            <div class="code" id="logics-id-get"></div>
+            
+            <p><b>PUT</b></p>
+            <p>Allows to modify a logic. The structure of the request is the same of the POST of /logics</p>
+            
+            
+            <h4><b>/logics/{id}/commands/activate</b> (POST e PUT)</h4>
+            <h4><b>/logics/{id}/commands/deactive</b></h4>
+            <p>Commands to activate and deactivate a logic </p>
+            
+        </section>
+        <section id="config">
+            <div class="page-header">
+                <h2>Config</h2>
+            </div>
+            
+             <h4><b>/config</b></h4>
+             <p>Allows to manage the system configuration </p>
+             
+             <p><b>GET</b></p>
+             <p>Returns the list of system parameters</p>
+             
+             <button class="btn btn-default json-collapse" id="config-get-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="config-get-expand-btn">Expand</button>
+            
+            <div class="code" id="config-get"></div>
+            
+            <p>Supported parameters are:</p>
+            <ul>
+                <li><b>gwaddress</b>: gateway ip address </li>
+                <li><b>pollingtime</b>: updating time of sensor data</li>
+            </ul>
+            
+            <p><b>POST</b></p>
+            <p>Allows to modify configuration paramenters</p>
+            
+            <button class="btn btn-default json-collapse" id="config-post-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="config-post-expand-btn">Expand</button>
+            
+            <div class="code" id="config-post"></div>
+            
+            <h4><b>/config/reload</b></h4> 
+            <p>Force the loading of configuration from file. </p>
+        </section>
+    </div>
+</div>
+
+

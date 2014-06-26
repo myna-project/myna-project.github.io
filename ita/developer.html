@@ -1,13 +1,302 @@
 ---
-title: Developer
+title: Sviluppatori
 layout: default
-lang: eng
+lang: ita
 active: developer
 ---
-<div class="container">
-    <div class="row"> 
-        <div class="col-lg-12 col-md-12">  
-            <h1> {{page.title}} </h1>
-        </div>
+<div class="row"> 
+     <div class="col-lg-3 col-md-3">
+        {% include developer-side-navbar.html %}
+     </div>
+    <div class="col-lg-9 col-md-9"> 
+        <section id="gateway-description">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].gateway-description }}</h2>
+            </div>
+            <p> Sul Raspberry Pi è stato sviluppato un server Modbus in python, basato sulla libreria <a href="https://github.com/bashwork/pymodbus">pymodbus</a>. Il server è attualmente stabile, anche se con funzionalità limitate (gateway piface/onewire/enocean verso modbus) e con alcuni TODO.</p>
+                <p> Il server è un gateway Modbus TCP. E' possibile leggere i dati di <a href="http://owfs.org/">owserver</a> cioè i valori riportati da sensori di tipo onewire (indipendentemente dal modo in cui sono stati collegati al Raspberry), leggere ingressi e uscite digitali di una o più schede <a href="http://pi.cs.man.ac.uk/interface.htm">PiFace</a> tramite la libreria <a href="https://github.com/piface/pifacedigitalio">pifacedigitalio</a>, leggere i valori dei sensori wireless enocean tramite una chiavetta transceiver USB enocean. La configurazione dei sensori e le coppie sensori-registri modbus sono totalmente configurabili tramite file di configurazione Myna (formato ini).</p>
+                <p> NB: E' previsto <b>(ma al momento non testato)</b> l'uso di più di una scheda PiFace (es. tramite PiRack). Il parametro di configurazione è <b>Boards</b> nella sezione <b>PiFace</b>. Se non specificato, il default è 0 (cioè assenza di una PiFace).</p>
+                <p> Il daemon prevede la lettura di un file di configurazione (path di default <b>/etc/myna/myna.conf</b>) strutturato come file <b>ini</b>, letto tramite la libreria <b>python-configparser</b>.</p>
+                <p><b>Lo stato delle coil viene salvato su un file quindi ripristinato al riavvio del daemon. Se il file si trova su tmpfs gli stati vengono mantenuti al riavvio del daemon ma non riavvio del sistema o spegnimento imprevisto.</b></p>
+              <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="operation">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].operation }}</h2>
+            </div>
+            <p> Al lancio del daemon, se tutti i controlli preliminari vanno a buon fine, viene inizializzato il logging, ridotti i privilegi e lanciato un processo che inizializza le schede PiFace, i thread per ricevere dati dal server One Wire owserver e dal trasnceiver EnOcean. Infine, viene lanciato il server Modbus TCP. Eventuali errori di lettura dei sensori sono gestiti con un valore di default configurabile oppure, per sporadiche mancate letture, con un intervallo di tempo configurabile (HoldingTime) in cui viene mantenuta l'ultima lettura. I timings di polling e holding di One Wire e EnOcean sono indipendentemente configurabili.</p>
+            <p> Il server Modbus TCP chiamerà delle callback, una per ogni classe di registri (input digitali, holding registers e coils, mentre gli input discreti non sono implementati), i quali inizializzeranno i valori di default, nei casi previsti (vedi coils) verranno caricati gli stati salvati al precedente avvio del daemon, e verranno letti o scritti gli input e output. </p>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="installation">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].installation }}</h2>
+            </div>
+            <p> Per il funzionamento del gateway Modbus occorrono Python (2.6 o superiore, sviluppato e testato con la 2.7, non funzionante con versioi 3.x) e una serie di librerie. A seguire quelle installate sotto Debian:</p>
+            <div class="code">
+                apt-get install python <br>
+                apt-get install python-cap-ng python-lockfile python-configparser python-jsonpickle python-pifacedigitalio 
+                python-pymodbus python-daemon python-twisted python-serial python-rrdtool
+            </div>
+            <p> Le librerie <b>pymodbus</b> e <b>python-configparser</b> è meglio scaricarle dalla <b>jessie</b> e installarle a mano (la prima perché non aggiornata nella wheezy, la seconda perché non disponibile su wheezy). Riguardo <b>ownet</b> non viene usato il pacchetto <b>python-ownet</b> poiché contiene diversi bugs. Assieme allo script vero e proprio del daemon, sono incluse due librerie nelle rispettive diretory <b>ownet</b> e <b>enocean</b>: la prima è una versione bug fixed di python-ownet, la seconda una implementazione del protocollo <a href="http://www.enocean.com/en/home/">EnOcean</a> basata sulla libreria di Alex Raimondi (<a href="https://github.com/kleckse/enocean">https://github.com/kleckse/enocean</a>).</p>
+            <p> E' inoltre necessario creare un utente con opportuni permessi (a meno che non ci si limiti a fare girare il daemon come root):</p>
+            <div class="code">
+                groupadd -g 502 -r modbus<br>
+                useradd -u 502 -g modbus -G spi,gpio -d /nonexistent -s /bin/false -r modbus
+            </div>
+            <p>L'avvio al boot del daemon avviene tramite lo script di init <b>/etc/init.d/modbus</b>, quindi in una installazione Debian può essere avviato o fermato o fatto ripartire come <b>service modbus start/stop/restart</b>.</p>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="data-history">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].data-history }}</h2>
+            </div>
+            <p>E' stata introdotta la funzione di storicizzazione dei dati. I dati vengono memorizzati in database in formato <b>RRD</b>, con parametri al momento fissi di <b>step</b> di 300 secondi, <b>heartbeat</b> di 3600 secondi, datasource <b>data</b> di tipo <b>GAUGE</b>, un solo <b>RRA</b> di tipo <b>AVERAGE</b> con <b>xff</b> di 0.5 e <b>105120</b> righe (numero di secondi di un anno / step, cioè un anno di dati campionati ogni 5 minuti).</p>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="logging">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].logging }}</h2>
+            </div>
+            <p>La configurazione del <b>logging</b>, gestita in maniera separata, è in formato ini esattamente come per myna.conf, ma gestita tramite <b>logging.config.fileConfig()</b> di Python.</p>
+            <p>I logger principali sono <b>pymodbus</b> e <b>main</b>. Il primo verrà utilizzato dalla libreria pymodbus, il secondo dal demon. Possono avere handlers e livelli di logging differenti e indipendenti.</p>
+            <p>Per maggiori informazioni riferirsi al manuale Python, in particolare: <a href="https://docs.python.org/2/library/logging.config.html">https://docs.python.org/2/library/logging.config.html</a></p>
+          <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>   
+        </section>
+        <section id="configuration-file-format">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].configuration-file-format }}</h2>
+            </div>
+            <p>Le sezioni direttamente interessanti il gateway sono le seguenti:</p>
+            <ul>
+                <li><b>daemon</b>: definiscono i parametri del daemon, i parametri One Wire e EnOcean, i parametri per la storicizzazione dati, ecc.</li>
+                <li><b>device</b>: definiscono i dispositivi e l'associazione con i registri modbus</li>
+            </ul>
+            <p> Grazie a estensione delle funzioni di <b>ConfigParser</b> tramite una apposita classe <b>MynaConfig()</b>, è previsto che le sezioni possano contenere sottosezioni (es. <b>device.mydevice1</b>, <b>device.mydevice2</b>, ...) così come le chiavi possono anche avere delle sottochiavi (es. <b>climatic.x</b>, <b>climatic.y</b>, <b>climatic.z</b>).</p>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="daemon">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].daemon }}</h2>
+            </div>
+            <p>Sottosezioni:</p>
+            <ul>
+                <li><b>daemon.Daemon</b>:<br>
+                    contiene la configurazione del daemon modbus vero e proprio. <b>uid</b> e <b>gid</b> definiscono l'utente unix (uid numerico, non username) e il gruppo unix (gid numerico, non groupname) con cui gira il daemon (se non diversamente specificato sarà 0 quindi root, sconsigliato per motivi di sicurezza). <b>listenport</b> definisce la porta TCP di ascolto su cui risponderà modbus (default 502). <b>supplementarygroups</b> (boolean) definisce se usare gruppi unix supplementari (richiesto se usate schede PiFace). <b>listenaddress</b> definisce l'indirizzo IP di ascolto di modbus (se non diversamente specificato sarà 0.0.0.0 quindi tutti gli indirizzi configurati su tutte le interfacce di rete). <b>pidfile</b> definisce il path e filename del pid file.</li>
+                <li><b>daemon.Modbus</b>:<br>
+                    definisce la configurazione dei parametri Modbus di base/default. <b>registers</b> definisce il numero di registri che devono essere presenti (anche se non utilizzati), <b>endianity</b> (Big o Little) se i dati modbus sulla rete defono essere inviati in formato big endian o little endian e quindi l'ordine dei bytes delle words. <b>datastore</b> definisce il file in cui verranno salvati gli stati dei registri (in particolare delle coil) in modo da rendere resiliente lo stato di questi ultimi al riavvio del daemon.
+                </li>
+                <li>
+                    <b>daemon.PiFace</b>:<br>
+                    definisce la presenza e il numero di PiFace presenti (parametro <b>boards</b>).
+                </li>
+                <li>
+                    <b>daemon.Ownet</b>:<br>
+                    definisce la configurazione del thread di ricezione dei dati da sensori di tipo One Wire. I dati vengono ricevuti tramite il middleware <b>owserver</b>. I parametri sono <b>server</b> cioè l'indirizzo IP o l'hostname del server <b>owserver</b>, <b>port</b> cioè la porta TCP, path cioè il percorso virtuale della root di owfs (può servire in caso di hub o se si voglia usare la modalità uncached di owserver; in normali situazioni è '/'). <b>pollingtime</b> e <b>holdingtime</b>, rispettivamente l'intervallo con cui i dati sono campionati (nel caso di EnOcean scaricati dalla coda di ricezione, la quale è in realtà aggiornata alla ricezione dei dati, indipendentemente dall'intervallo di questi ultimi) e l'intervallo in cui si considera valida l'ultima lettura in caso di mancata ricezione. <b>failvalue</b> definisce un valore fittizio da attribuire in caso di mancata lettura di un sensore e superamento dell'<b>holdingtime</b>. <b>datastore</b> definisce il path in cui verrà aggiornato un file con le ultime letture e i timestamp delle stesse (in modo che le verifiche di validità - vedi holdingtime - siano resilienti al riavvio del daemon).
+                </li>
+                <li>
+                    <b>daemon.EnOcean</b>:<br>
+                    definisce la configurazione del thread di ricezione dei dati da sensori di tipo EnOcean. I parametri sono <b>port</b> cioè la seriale su cui risponde il transceiver, <b>pollingtime</b> e <b>holdingtime</b>, rispettivamente l'intervallo con cui i dati sono campionati (nel caso di EnOcean scaricati dalla coda di ricezione, la quale è in realtà aggiornata alla ricezione dei dati, indipendentemente dall'intervallo di questi ultimi) e l'intervallo in cui si considera valida l'ultima lettura in caso di mancata ricezione. <b>failvalue</b> definisce un valore fittizio da attribuire in caso di mancata lettura di un sensore e superamento dell'<b>holdingtime</b>. <b>datastore</b> definisce il path in cui verrà aggiornato un file con le ultime letture e i timestamp delle stesse (in modo che le verifiche di validità - vedi holdingtime - siano resilienti al riavvio del daemon).
+                </li>
+                <li>
+                    <b>daemon.RRD</b>:<br>
+                    contiene la configurazione della storicizzazione dei dati. Il parametro <b>enable</b> (boolean) definisce se la storicizzazione è attiva; il parametro <b>path</b> definisce la posizione dei database RRD.
+                </li>
+                <li>
+                    <b>
+                        daemon.Identity
+                    </b>:<br>
+                    contiene le definizioni di marca/modello/versione che saranno esposte tramite Modbus alle richieste di identificazione del dispositivo.
+                </li>
+            </ul>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="device">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].device }}</h2>
+            </div>
+            <p>Ogni dispositivo contiene una sottosezione, un <b>id</b> (meglio se corrispondente alla sottosezione), un <b>register</b> che corrisponde alla coppia di registri modbus associati, un <b>bus</b> (che può essere <b>piface</b>, <b>onewire</b>, <b>enocean</b> al momento), un <b>address</b> che corrisponde all'indirizzo del sensore in caso di One Wire o EnOcean, un <b>type</b> che definisce il tipo di misura (al momento supportati <b>Temperature</b> e <b>Humidity</b>). In caso di bus enocean è necessario specificare anche il parametro <b>eep</b>, cioè l'Equipment Provile del dispositivo, non trasmesso over the air. La presenza di ulteriori parametri è trasparente e tollerata.</p>
+            <p>Il file di configurazione può contenere altre sezioni destinate ad altre componenti di Myna quali la web gui, il sistema di alerting, l'amministrazione. Queste sezioni non verranno qui trattate, e la loro presenza è trasparente al daemon.
+        </section>
+        <section id="holding-registers">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].holding-registers }}</h2>
+            </div>
+            <p>I registri sono usati a coppie, in formato float32 (IEEE 754) e sono configurabili tramite il parametro <b>register</b> delle sezioni <b>device</b>. Il parametro <b>register</b> indica il primo registro, si da per scontato si intenda una coppia quindi un valore a 32 bits.</p>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="input-registers">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].input-registers }}</h2>
+            </div>
+            <table width="50%" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>REGISTER</th>
+                        <th>USAGE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>PiFace 1 input 1</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>PiFace 1 input 2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>PiFace 1 input 3</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>PiFace 1 input 4</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>PiFace 1 input 5</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>PiFace 1 input 6</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>PiFace 1 input 7</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>PiFace 1 input 8</td>
+                    </tr>
+                    <tr>
+                        <td>9...</td>
+                        <td>PiFace 2 input 1</td>
+                    </tr>
+                </tbody>
+            </table>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="coils">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].coils }}</h2>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>REGISTER</th>
+                        <th>USAGE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>PiFace 1 output 1</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>PiFace 1 output 2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>PiFace 1 output 3</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>PiFace 1 output 4</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>PiFace 1 output 5</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>PiFace 1 output 6</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>PiFace 1 output 7</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>PiFace 1 output 8</td>
+                    </tr>
+                    <tr>
+                        <td>9...</td>
+                        <td>PiFace 2 output 1</td>
+                    </tr>
+                </tbody>
+            </table>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
+        <section id="config-myna">
+            <div class="page-header">
+                <h2>{{ site.t[page.lang].config-myna }}</h2>
+            </div>
+            <div class="code">
+                   [daemon.Daemon]<br>
+uid = 502<br>
+listenport = 502<br>
+supplementarygroups = True<br>
+gid = 502<br>
+listenaddress = 0.0.0.0<br>
+pidfile = /run/modbus/modbus.pid<br><br>
+ 
+[daemon.Modbus]<br>
+registers = 255<br>
+datastore = /run/modbus/mbstore<br>
+endianity = Big<br><br>
+ 
+[daemon.PiFace]<br>
+boards = 1<br><br>
+ 
+[daemon.Ownet]<br>
+server = localhost<br>
+port = 4304<br>
+path = /<br>
+failvalue = 9999<br>
+datastore = /run/modbus/owstore<br>
+pollingtime = 60<br>
+holdingtime = 300<br><br>
+ 
+[daemon.Identity]<br>
+vendorname = Pymodbus<br>
+productcode = PM<br>
+vendorurl = http://github.com/bashwork/pymodbus/<br>
+productname = Pymodbus Server<br>
+modelname = Pymodbus Server<br>
+majorminorrevision = 1.0<br><br>
+ 
+[daemon.RRD]<br>
+enable = True<br>
+path = /var/log/modbus<br><br>
+ 
+[device.HVAC_MEETING_VLV]<br>
+name =<br>
+coil = 2<br>
+type = OnOff<br>
+id = HVAC_MEETING_VLV<br>
+bus = piface<br><br>
+ 
+[device.HVAC_MEETING_T]<br>
+external = False<br>
+address = 19A3EB030000<br>
+register = 1<br>
+type = Temperature<br>
+id = HVAC_MEETING_T<br>
+bus = onewire<br><br>
+ 
+[device.HVAC_STM330_T]<br>
+name = STM330<br>
+bus = enocean<br>
+register = 3<br>
+eep = A5-02-05<br>
+external = False<br>
+address = 0181120A<br>
+type = Temperature<br>
+id = HVAC_STM330_T<br>
+            </div>
+             <p class="pull-right"><a href="#">{{ site.t[page.lang].back_to_top }}</a></p>
+        </section>
     </div>
 </div>

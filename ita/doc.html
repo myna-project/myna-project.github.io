@@ -1,0 +1,241 @@
+---
+title: Documentazione
+layout: default
+lang: ita
+active: documentation
+---
+
+<div class="row"> 
+    <div class="col-lg-3 col-md-3">
+        {% include documentation-side-navbar.html %}
+    </div>
+    <div class="col-lg-9 col-md-3">
+        <section id="registry-configuration">
+            <div class="page-header">
+                <h2>Registry/Configuration </h2>
+            </div>
+            
+            <h4><b>/maps </b></h4>
+            <p>Permette di ottenere la lista delle stanze di un dato appartamento e configurarle in base alla associazione dei device supporto per GET/POST</p>
+            
+            <p><b>GET</b></p>
+            <p>Permette di ottenere la lista delle stanze definite nel sistema </p>
+            
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-get-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-get"></div>
+            
+            
+            <p><b>POST</b></p>
+            <p>Permette la creazione di una nuova stanza nel sistema</p>
+            
+            <p><b>Request</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-post-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-post-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-post"></div>
+            
+            <p>Nel caso una stanza sia già stata definita si provvede alla riscrittura della stessa, unica nota i dispositivi devono essere definiti nel sistema</p>
+            
+            
+            <h4><b>/maps/{id} </b></h4>
+            <p>Permette di lavorare sul dettaglio di una stanza.</p>
+            
+            <p><b>GET</b></p>
+            <p>La chiamata permette di ottenere i dettagli di una determinata stanza </p>
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-id-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-id-get-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-id-get"></div>
+            
+            <p><b>PUT</b></p>
+            <p>Permette la modifica di una stanza nel sistema </p>
+            <p><b>Request</b></p>
+            <button class="btn btn-default json-collapse" id="registry-maps-id-put-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="registry-maps-id-put-expand-btn">Expand</button>
+            
+            <div class="code" id="registry-maps-id-put"></div>
+            <p>Unica nota i dispositivi devono essere definiti nel sistema</p>
+            
+            <p><b>DELETE</b></p>
+            <p>Permette la cancellazione di una stanza</p>
+
+            <h4><b>/maps/{id}/commands/warmup</b> (POST e PUT)</h4>
+            <h4><b>/maps/{id}/commands/off</b> (POST e PUT)</h4>
+            <p>Permettono di inviare un comando alla stanza. Al momento è supportato il comando warmup (scalda) e off. In seguito al comando warnup tutte le logiche associate ad una stanza vengono disabilitate </p>
+        
+         </section>
+        
+        <section id="status">
+            <div class="page-header">
+                <h2>Status </h2>
+            </div>
+            
+            <h4><b>/status </b></h4>
+            <p>Con questa chiamata è possibile ottenere lo stato dei vari dispositivi del sistema definiti nella chiamata devices </p>
+            <p><b>GET</b></p>
+            <p>Ritorna la lista dello stato di tutti i dispositivi </p>
+            <p><b>Result</b></p>
+            <button class="btn btn-default json-collapse" id="status-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="status-get-expand-btn">Expand</button>
+            
+            <div class="code" id="status-get"></div>
+            
+            
+            <h4><b>/status/{id} </b></h4>
+            <p> Permette di ottenere il dettaglio dei device </p>
+            <p><b>GET</b></p>
+            <p>Ritorna il valore della variabile name che può essere un'apparecchiatura, un sensore o una regolazione automatica.</p>
+            <p><b>Result</b></p>
+            <div class="code" id="status-id-get"></div>
+           
+        </section>
+        
+        <section id="devices">
+            <div class="page-header">
+                <h2>Devices </h2>
+            </div>
+            
+            <h4><b>/devices </b></h4>
+            <p>Permette la gestione dei dispositivi collegati al sistema</p>
+            <p><b>GET</b></p>
+            <p>Ritorna la lista dei dispositivi del sistema </p>
+            <button class="btn btn-default json-collapse" id="devices-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="devices-get-expand-btn">Expand</button>
+            
+            <div class="code" id="devices-get"></div>
+            
+            <p><b>POST</b></p>
+            <p>Permette la creazione di un nuovo device </p>
+            <div class="code" id="devices-post"></div>
+            <p>Permette la creazione di un nuovo dispositivo ne sono supportati due al momento, nel caso esista gia si provvede alla sovrascrittura </p>
+            <p><b>Temperature</b></p>
+            <p>Dispositivo di temperatura con i seguenti parametri </p>
+            <ul>
+                <li><b>id</b>, id del dispositivo </li>
+                <li><b>type</b>, Temperature </li>
+                <li><b>bus</b>, tipologia del bus onewire, enocean e piface </li>
+                <li><b>address</b>, indirizzo dei device (valido per enocoean/onewire)</li>
+                <li><b>register</b>, il registro modbus associato  </li>
+                <li><b>eep</b>, profilo enocean supportato  </li>
+                <li><b>external</b>, per indicare un dispositivo esterno alla abitazione  </li>
+                <li><b>id</b>, name </li>
+            </ul>
+            <p><b>OnOff</b></p>
+            <p>Dispositivo che permette di effettuare attuazioni nell'abitazione </p>
+            <ul>
+                <li><b>id</b>, id del dispositivo </li>
+                <li><b>type</b>, OnOff </li>
+                <li><b>coil</b>, indirizzo del piface </li>
+                <li><b>name</b>, nome dei dispositivo</li>
+            </ul>
+            
+            
+             <h4><b>/devices/{id} </b></h4>
+             <p>Permette di vedere i dettagli di un singolo dispositivo</p>
+             <p><b>GET</b></p>
+             <p>Permette di ottenere i dettagli dei dispositivo </p>
+             <div class="code" id="devices-id-get"></div>
+             
+             <p><b>PUT</b></p>
+             <p>Stesso formato delle POST /device</p>
+             
+             <p><b>DELETE</b></p>
+             <p>Permette la cancellazione di un dispositivo solo se non è stato associato a nessuna stanza </p>
+             
+             <h4><b>/devices/{id}/commands/on </b>(POST e PUT)</h4>
+             <h4><b>/devices/{id}/commands/off</b>(POST e PUT)</h4>
+        </section>
+        <section id="logics">
+            <div class="page-header">
+                <h2>Logics</h2>
+            </div>
+            
+            <h4><b>/logics </b></h4>
+            <p>Questa api permette la gestione delle logiche relative a myna. Al momento sono supportate due logiche a soglia di temperatura e a tempo </p>
+        
+            <p><b>GET</b></p>
+            <p>Ritorna la lista delle logiche del sistema</p>
+            <button class="btn btn-default json-collapse" id="logics-get-collapse-btn">Collapse</button>
+            <button class="btn btn-default json-expand" id="logics-get-expand-btn">Expand</button>
+            
+            <div class="code" id="logics-get"></div>
+            
+            <p><b>POST</b></p>
+            <p>Permette la creazione delle logiche di controllo del sistema, nel caso una logica sia stata gia definita si provvede alla sovrascrittura i tipi supportati sono </p>
+            <p><b>ThresholdTemperature</b></p>
+            <ul>
+                <li><b>id</b>, indentificativo della logica (nel caso non sia fornito ne viene generato uno casuale) </li>
+                <li><b>room</b>,indica la stanza associata alla logica </li>
+                <li><b>temp</b>, la soglia di temperatura da gestire (note il campo unit non viene salvato essendo di sistema) </li>
+                <li><b>enable</b>, indica se la logica è abilitatà oppure no </li>
+            </ul>
+            
+            <p><b>TimeProgramming</b></p>
+            <p>Estende il tipo ThresholdTemperature inserendo il campi time che indica il tempo di inizio e fine della schedulazione, per ogni schedulazione e possibile inserire una temperatura diversa</p>
+            
+            <p><b>Note</b></p>
+            <ul>
+                <li>E' possibile avere una solo logica attiva per stanza</li>
+                <li>Ogni stanza può definire una sola logica per tipo</li>
+                <li>Nelle schedulazione temporale non è possibile creare delle logica che si sovrappongono come orario </li>
+            </ul>
+            
+             <h4><b>/logics/{id} </b></h4>
+             <p>L'api permette di gestire una singola logica </p>
+             <p><b>GET</b></p>
+             <p>Ritorna il dettaglio di una singola logica </p>
+             
+             <button class="btn btn-default json-collapse" id="logics-id-get-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="logics-id-get-expand-btn">Expand</button>
+            
+            <div class="code" id="logics-id-get"></div>
+            
+            <p><b>PUT</b></p>
+            <p>Permette di modificare una singola logica secondo gli stessi criteri della POST di /logics</p>
+            
+            
+            <h4><b>/logics/{id}/commands/activate</b> (POST e PUT)</h4>
+            <h4><b>/logics/{id}/commands/deactive</b></h4>
+            <p>Comandi per permettono l'attivazione e la disattivazione di una logica </p>
+            
+        </section>
+        <section id="config">
+            <div class="page-header">
+                <h2>Config</h2>
+            </div>
+            
+             <h4><b>/config</b></h4>
+             <p>Permette la gestione delle configurazione generica del sistema </p>
+             
+             <p><b>GET</b></p>
+             <p>Ritorna la lista dei parametri di sistema</p>
+             
+             <button class="btn btn-default json-collapse" id="config-get-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="config-get-expand-btn">Expand</button>
+            
+            <div class="code" id="config-get"></div>
+            
+            <p>I parametri al momento supportati sono:</p>
+            <ul>
+                <li><b>gwaddress</b>: indirizzo ip del gateway </li>
+                <li><b>pollingtime</b>: il tempo di aggiornamento dei dati dai sensori </li>
+            </ul>
+            
+            <p><b>POST</b></p>
+            <p>Permette la modifica dei parametri di configurazione  </p>
+            
+            <button class="btn btn-default json-collapse" id="config-post-collapse-btn">Collapse</button>
+             <button class="btn btn-default json-expand" id="config-post-expand-btn">Expand</button>
+            
+            <div class="code" id="config-post"></div>
+            
+            <h4><b>/config/reload</b></h4> 
+            <p>Forza il caricamento delle configurazione da file </p>
+        </section>
+    </div>
+</div>
+

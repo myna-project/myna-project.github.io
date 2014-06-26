@@ -1,12 +1,22 @@
 /* 
-    Document   : custom
-    Created on : Jun 5, 2014, 12:01:08 PM
-    Author     : alessandra
-    Description:
-        Purpose of the stylesheet follows.
-*/
-
-root { 
-    display: block;
+    side nav bar style
+---------------------------------*/
+#documentation-side-navbar, #developer-side-navbar{
+    position:fixed;
+    width: 12%;
 }
 
+li.list-group-item.active a{
+    color: white;
+}
+/*
+    code snippet style 
+---------------------------------*/
+
+.code{
+    background-color: #d6d6d6;
+    margin: 10px;
+    padding:10px;
+    font-family: monospace;
+    border:#080808 dashed thin;
+}
