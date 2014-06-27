@@ -43,6 +43,15 @@ body {
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
   z-index: 10;
+  color: black !important;
+}
+
+.carousel-indicators li {
+    border: 1px solid black !important;
+}
+
+.carousel-indicators .active {
+    background-color: black !important;
 }
 
 .carousel-caption p
